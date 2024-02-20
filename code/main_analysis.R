@@ -38,16 +38,16 @@ df_reg <- cohort %>%
 
 ## education variables ----
 m_educ <- df_reg %>% 
-  feols(c(r_gen.eth, r_mech, diff_mech) ~ csw(educ_w + educ_gini, 
-                                              africa + cohort_cat), 
+  feols(c(r_gen.eth, r_mech, diff_mech) ~ csw(educ_w, africa + cohort_cat), 
         cluster = ~alpha_3)
+
 ### Africa Dummy Significance ----
 m_educ_1 <- df_reg %>% 
-  feols(c(r_gen.eth, r_mech, diff_mech) ~ sw0(educ_w, educ_gini) +
-                                              africa + cohort_cat, 
+  feols(c(r_gen.eth, r_mech, diff_mech) ~ educ_w + africa + cohort_cat, 
         cluster = ~alpha_3)
 
 etable(m_educ_1)
+
 ## sample size variables  ----
 m_samp <- df_reg %>% 
   feols(c(r_gen.eth, r_mech, diff_mech) ~ csw(n_sample + n_ethnicity, 
@@ -62,7 +62,7 @@ m_group <- df_reg %>%
 
 # theil index regressions ----
 m_theil <- df_reg %>% 
-  feols(theil_gen.eth ~ sw(educ_w + educ_gini, 
+  feols(theil_gen.eth ~ sw(educ_w, 
                            n_sample + n_ethnicity, 
                            l_gen.eth_n + h_gen.eth_n) + africa + cohort_cat,
         cluster = ~ alpha_3)
