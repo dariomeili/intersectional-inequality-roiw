@@ -1,0 +1,129 @@
+% Options for packages loaded elsewhere
+
+\PassOptionsToPackage{hyphens}{url}
+\PassOptionsToPackage{dvipsnames,svgnames*,x11names*}{xcolor}
+%
+\documentclass[12pt, a4paper]{article}
+
+% Set up fonts
+
+\usepackage{amssymb,amsmath} % Need to load before unicode-math
+
+
+% Customize floats: always put captions at the top and use the
+% afore-defined typeface in tables. This packages also provides the
+% `\floatfoot' environment for notes in floats.
+\usepackage{floatrow}
+\floatsetup[table]{capposition=top, font={small}} % neet this for table caption to go on top
+% Make float numbers and labels stand out
+\usepackage[labelfont=bf]{caption}
+
+% appendix titles
+\usepackage[title]{appendix}
+
+\usepackage[]{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+\usepackage{xcolor}
+\usepackage{xurl} % add URL line breaks
+\usepackage{bookmark}
+\hypersetup{
+  pdftitle={Intersectional Inequality in Education},
+  pdfauthor={Dario Meili, Isabel Günther, Kenneth Harttgen},
+  pdfkeywords={Inequality, Intersectionality, Measurement, Poverty},
+  colorlinks=true,
+  linkcolor=Maroon,
+  filecolor=Maroon,
+  citecolor=Blue,
+  urlcolor=Blue,
+  pdfcreator={LaTeX via pandoc}}
+\urlstyle{same} % disable monospaced font for URLs
+\usepackage{geometry}
+\geometry{a4paper,
+ left=25mm,
+ top=25mm}
+\usepackage{longtable,booktabs,dcolumn}
+
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\usepackage{footnotehyper}
+\makesavenoteenv{longtable}
+\usepackage{graphicx,subcaption}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{3}
+\usepackage{float}
+\usepackage{placeins}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{wrapfig}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{tabu}
+\usepackage{threeparttable}
+\usepackage{threeparttablex}
+\usepackage[normalem]{ulem}
+%degree symbol
+\usepackage{gensymb}
+\usepackage{makecell}
+\usepackage{siunitx} 
+% needed for modelsummary
+\usepackage{comment} % needed for commenting out sections
+%bibliography
+\usepackage{natbib}
+\usepackage{setspace}%needed for onehlafspacing
+\newcolumntype{d}{S[input-symbols = ()]} 
+%needed for modelsummary
+
+
+
+\newlength{\cslhangindent}
+\setlength{\cslhangindent}{1.5em}
+\newlength{\csllabelwidth}
+\setlength{\csllabelwidth}{3em}
+\newenvironment{CSLReferences}[2] % #1 hanging-ident, #2 entry spacing
+ {% don't indent paragraphs
+  \setlength{\parindent}{0pt}
+  % turn on hanging indent if param 1 is 1
+  \ifodd #1 \everypar{\setlength{\hangindent}{\cslhangindent}}\ignorespaces\fi
+  % set entry spacing
+  \ifnum #2 > 0
+  \setlength{\parskip}{#2\baselineskip}
+  \fi
+ }%
+ {}
+ 
+\usepackage{calc}
+\newcommand{\CSLBlock}[1]{#1\hfill\break}
+\newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{#1}}
+\newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{#1}\break}
+\newcommand{\CSLIndent}[1]{\hspace{\cslhangindent}#1}
+
+\usepackage{quotes}
+
+%make it possible to control margins of landscape tables 
+\makeatletter
+
+\def\vfudge#1#2{%
+\addtolength\textheight{#1}%
+\@colroom\textheight
+\vsize\textheight
+\@colht\textheight
+\def\LS@rot{%
+  \setbox\@outputbox\vbox{\hbox{\kern-#2\rotatebox{90}{\box\@outputbox}}}}%
+\clearpage}
+
+\makeatother

@@ -1,0 +1,51 @@
+
+% Appendix  A %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{landscape}
+\hypertarget{aggregated-data}{%
+\section{Supplementary Tables}\label{aggregated-data}}
+\renewcommand{\arraystretch}{0.8}% Tighter
+
+\input{tables/aggregated-data}
+\clearpage
+\input{tables/groupnames}
+\end{landscape}
+\input{tables/years-ethnicity}
+
+\clearpage
+
+\section{Supplementary Figures}
+\label{sec:groupmeans}
+\begin{figure}[!ht]
+\includegraphics{figures/mean-educ.pdf} \caption[Average Years in Education by Group]{Average Years in Education by Group}\label{fig:mean-educ}
+\floatfoot{\textit{Notes:} 
+Pooled data from 40 countries; $n=$2,689,279 individuals older than 25 years and younger than the birth cohort of 1920. Estimates to the right of the overall mean represent the average education of the group with the highest education. Means are calculated using DHS sample weights. Sources: DHS 1992-2019 and US CPS 2019.
+} \end{figure}
+
+\clearpage
+
+\hypertarget{robustness-checks-with-the-theil-index}{%
+\section{Robustness Checks}\label{robustness-checks-with-the-theil-index}}
+\setcounter{table}{0}
+\renewcommand{\thetable}{\thesection\arabic{table}}
+
+Alternatively to the inequality ratio \(IR\) we can use a variant of the Theil Index, which is a special case of the General Entropy measures, as follows:
+
+\[
+T(G) = \frac{1}{J}\sum_{j=1}^{J}\frac{s_j}{\mu_s}arsinh(\frac{s_j}{\mu_s}),
+\]
+
+where \(s_j\) denotes the group averages, as previously defined for \(IR\), \(J\) denotes the numbers of groups and \(\mu\) the unweighted mean of all \(s_j\). Instead of the natural logarithm, as is normally used for the Theil Index, we use an inverse hyperbolic sine transformation (\(arsinh\)). It has the advantage of being defined for zero values, which is a problem that we would inevitably run into with education data from low- and middle-income countries.
+
+Repeating the regressions shown in Table \ref{tab:ratios}, but with inequality measured by the Theil Index instead of the inequality ratio leads to the results reported in Table \ref{tab:theil}. The results remain fairly comparable.
+
+\begin{table}
+
+\caption{OLS Regression of Between-Group Theil Indices of Education Inequality\label{tab:theil}}
+\centering
+\input{tables/reg_theil}
+\floatfoot{\textit{Notes:} Aggregated country-cohort bracket level data from 40 countries; n=2'689'279 individuals 25 years and older, and born after 1920; cluster-robust standard errors on the country-level in parentheses; Sign. codes: $^*p<10\%$, $^{**}p<5\%$, $^{***}p<1\%$. \\
+$^a$~Within-country-cohort weighted mean years of education with DHS sampling weights;\\
+$^b$~Within-country-cohort (individual) Gini index takes on a value between 0 and 1;\\
+$^c$~Corresponds to country-cohort sample size in units of 1000;\\
+$^d$~Ref: Cohort -1969.}
+\end{table}

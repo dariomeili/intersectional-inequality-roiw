@@ -1,0 +1,49 @@
+\begin{table}
+
+\caption{Correlates of decomposed intersectionality (OLS)\label{tab:surplus}}
+\centering
+\begin{threeparttable}
+\resizebox{\linewidth}{!}{
+\begin{tabular}[t]{lcccc}
+\toprule
+\multicolumn{1}{c}{ } & \multicolumn{4}{c}{Group inequality ratio} \\
+\cmidrule(l{3pt}r{3pt}){2-5}
+\multicolumn{1}{c}{Variable} & \multicolumn{2}{c}{Mechanical} & \multicolumn{2}{c}{Suprlus} \\
+\cmidrule(l{3pt}r{3pt}){1-1} \cmidrule(l{3pt}r{3pt}){2-3} \cmidrule(l{3pt}r{3pt}){4-5}
+  & (A) & (B) & (C) & (D)\\
+\midrule
+(Intercept) & 0.271 & 0.655** & -6.266 & -4.443\\
+ & (0.258) & (0.195) & (5.111) & (4.962)\\
+Mean education (yrs)$^a$ & 0.052*** & 0.049*** & -0.222 & -0.251\\
+ & (0.010) & (0.007) & (0.197) & (0.198)\\
+Log(GDP p.c.) & 0.003 & -0.001 & 1.004 & 1.320*\\
+ & (0.030) & (0.020) & (0.597) & (0.560)\\
+SIGI$^b$ & -0.007** & -0.006*** & 0.025 & 0.017\\
+ & (0.002) & (0.002) & (0.047) & (0.047)\\
+Cohort 1970-1979$^c$ & 0.007 & 0.013 & -0.445 & -0.518\\
+ & (0.012) & (0.013) & (0.690) & (0.666)\\
+Cohort 1980- & -0.002 & 0.014 & -0.222 & -0.181\\
+ & (0.021) & (0.020) & (0.711) & (0.671)\\
+Log(Sample size)$^d$ &  & -0.029* &  & -0.568*\\
+ &  & (0.011) &  & (0.264)\\
+No. of ethnic groups &  & -0.012+ &  & 0.149\\
+ &  & (0.006) &  & (0.140)\\
+\midrule
+Num.Obs. & 97 & 97 & 97 & 97\\
+R2 Adj. & 0.753 & 0.824 & -0.002 & 0.016\\
+DV & 0.334 & 0.334 & 1.338 & 1.338\\
+\bottomrule
+\multicolumn{5}{l}{\rule{0pt}{1em}+ p $<$ 0.1, * p $<$ 0.05, ** p $<$ 0.01, *** p $<$ 0.001}\\
+\end{tabular}}
+\begin{tablenotes}
+\item \textit{Note: } 
+\item Aggregated country-cohort bracket level data from 40 countries;
+  n=2'689'279 individuals older than 25 years and younger than birth cohort of 1920. 
+           Cluster-robust standard errors on the country-level in parentheses.
+\item[a] Country-wise weighted mean years of education with DHS sampling weights.
+\item[b] Social Institutions and Gender Index from 0-100 (less-more discriminatory) against women.
+\item[c] Ref: Cohort -1969.
+\item[d] Corresponds to country-cohort sample size.
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
