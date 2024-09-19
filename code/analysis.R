@@ -22,7 +22,7 @@ cohort %<>%
                           "Africa" = c("Africa")), 
     africa = fct_relevel(africa, "Not Africa", "Africa"))
 
-# check size of extreme groups: 
+# make sure intersecting groups have at least 40 obs per cohort
 temp <- cohort %>% 
   select(country_long, cohort_cat, l_gen.eth_n, l_gen.eth_name,  h_gen.eth_n, h_gen.eth_name) %>% 
   filter(l_gen.eth_n<40 | h_gen.eth_n<40)

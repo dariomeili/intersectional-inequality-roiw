@@ -1,6 +1,4 @@
-load("processed-data/pool.Rda")
 
-p_load(tidytext)
 ##############################################################
 # Plot mean education for all countries, overall and by groups
 ##############################################################

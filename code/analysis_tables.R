@@ -1,7 +1,9 @@
-p_load(kableExtra, gtsummary, modelsummary)
+p_load(kableExtra, gtsummary, modelsummary, tinytable)
 
 ## Modelsummary presets
-options("modelsummary_format_numeric_latex" = "plain")
+options("modelsummary_format_numeric_latex" = "plain", 
+        modelsummary_factory_latex = 'kableExtra')
+
 
 glance_custom.fixest <- function(x, ...) {
   dv <- insight::get_response(x)
@@ -41,7 +43,7 @@ cohort %>%
   tbl_summary(by="Cohort bracket", 
               missing = "no",
               statistic = all_continuous() ~ "{mean} ({sd})") %>% 
-  modify_footnote(update = everything() ~ NA) %>% 
+  modify_footnote(all_stat_cols() ~ NA) %>% 
   as_kable_extra(format = "latex",
                  booktabs = TRUE,
                  linesep = ""
@@ -53,7 +55,7 @@ cohort %>%
 ####################################################
 options("modelsummary_format_numeric_latex" = "plain") # To disable `siunitx` and prevent `modelsummary` from wrapping numeric entries in `\num{}`
 
-# render reg table
+# Generate the table and use kableExtra
 modelsummary(list(
   "Panel A: Education Variables" = list(
     "(A)"=m_educ[[1]], 
@@ -85,17 +87,18 @@ modelsummary(list(
                "cohort_cat1970-1979" = "Cohort 1970-1979$^c$",
                "cohort_cat1980-" = "Cohort 1980-$^c$", 
                "(Intercept)" = "(Intercept)"),
-  stars = stars, 
+  estimate = "{estimate}{stars}",
   gof_map = gm,
   shape = "rcollapse",
   fmt = 5, 
-  escape = FALSE,
-  output = "latex_tabular") %>% 
-  add_header_above(c("Outcome:"=1, 
-                     "IR(gen:eth)"=2, 
-                     "Counterfactual"=2, 
-                     "Differential"=2)) %>% 
-  save_kable(regtable, file = "latex/tables/reg_inequalityratio.tex")
+  escape = FALSE) %>%
+  group_tt(j= list("Outcome:"=1,
+                     "IR(gen:eth)"=2:3,
+                     "Counterfactual"=4:5,
+                     "Differential"=6:7)) %>%
+  theme_tt("tabular") %>% 
+  save_tt(output = "latex/tables/reg_inequalityratio.tex")
+
 
 ################################################
 # Regression table of  Theil index on correlates
@@ -116,10 +119,10 @@ modelsummary(list("(A)"=m_theil[[1]],
              stars = stars, 
              gof_map = gm,
              fmt = 5,
-             escape = FALSE,
-             output = "latex_tabular") %>% 
-  add_header_above(c(" ", "Group Theil Index"=3)) %>% 
-  save_kable(file = "latex/tables/reg_theil.tex")
+             escape = FALSE) %>% 
+  group_tt(j = list("Group Theil Index" = 2:4)) %>% 
+  theme_tt("tabular") %>% 
+  save_tt(output = "latex/tables/reg_theil.tex")
 
 ####################################
 # Table of Aggregated Data (Results)

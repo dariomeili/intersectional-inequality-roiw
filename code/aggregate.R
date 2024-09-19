@@ -140,25 +140,6 @@ df_pool %<>%
          diff_mech = r_gen.eth - r_mech
   )
 
-# # ratio permutation
-# iter <- 100
-# df_pool %<>%
-#   mutate(perm_gen = map_dbl(data, ~ratio_perm(.x, iterations=iter, outcome = education, grouping = gender, weights = wgt)),
-#          perm_eth = map_dbl(data, ~ratio_perm(.x, iterations=iter, outcome = education, grouping = ethnicity, weights = wgt)),
-#          perm_gen.eth = map_dbl(data, ~ratio_perm(.x, iterations=iter, outcome = education, grouping = gen.eth, weights = wgt)),
-#          adj_r_gen = (1-perm_gen)+r_gen,
-#          adj_r_eth = (1-perm_eth)+r_eth,
-#          adj_r_gen.eth = (1-perm_gen.eth)+r_gen.eth)
-# 
-# # theil permutation
-# df_pool %<>%
-#   mutate(theil_perm_gen = map_dbl(data, ~theil_perm(.x, iterations=iter, outcome = education, grouping = gender, weights = wgt)),
-#          theil_perm_eth = map_dbl(data, ~theil_perm(.x, iterations=iter, outcome = education, grouping = ethnicity, weights = wgt)),
-#          theil_perm_gen.eth = map_dbl(data, ~theil_perm(.x, iterations=iter, outcome = education, grouping = gen.eth, weights = wgt)),
-#          adj_theil_gen = (1-theil_perm_gen)+theil_gen,
-#          adj_theil_eth = (1-theil_perm_eth)+theil_eth,
-#          adj_theil_gen.eth = (1-theil_perm_gen.eth)+theil_gen.eth)
-
 # share of zero's
 df_pool %<>% 
   mutate(zero_educ = map_dbl(data, ~pct_zero(.x)))
@@ -259,25 +240,6 @@ df_cohort %<>%
          diff_mech = r_gen.eth - r_mech
   )
 
-# ratio permutation 
-# iter <- 50
-# df_cohort %<>% 
-#   mutate(perm_gen = map_dbl(data, ~ratio_perm(.x, iterations=iter, outcome = education, grouping = gender, weights = wgt)),
-#          perm_eth = map_dbl(data, ~ratio_perm(.x, iterations=iter, outcome = education, grouping = ethnicity, weights = wgt)),
-#          perm_gen.eth = map_dbl(data, ~ratio_perm(.x, iterations=iter, outcome = education, grouping = gen.eth, weights = wgt)),
-#          adj_r_gen = (1-perm_gen)+r_gen, 
-#          adj_r_eth = (1-perm_eth)+r_eth,
-#          adj_r_gen.eth = (1-perm_gen.eth)+r_gen.eth)
-# 
-# # theil permutation 
-# df_cohort %<>% 
-#   mutate(theil_perm_gen = map_dbl(data, ~theil_perm(.x, iterations=iter, outcome = education, grouping = gender, weights = wgt)),
-#          theil_perm_eth = map_dbl(data, ~theil_perm(.x, iterations=iter, outcome = education, grouping = ethnicity, weights = wgt)),
-#          theil_perm_gen.eth = map_dbl(data, ~theil_perm(.x, iterations=iter, outcome = education, grouping = gen.eth, weights = wgt)),
-#          adj_theil_gen = (1-theil_perm_gen)+theil_gen, 
-#          adj_theil_eth = (1-theil_perm_eth)+theil_eth,
-#          adj_theil_gen.eth = (1-theil_perm_gen.eth)+theil_gen.eth)
-
 # share of zero's
 df_cohort %<>% 
   mutate(zero_educ = map_dbl(data, ~pct_zero(.x)))
@@ -312,15 +274,6 @@ sigi %<>%
 
 cohort %<>%
   left_join(sigi, by=c("alpha_3" = "sigi_code"))
-
-# population growth data
-wb_popgrowth <- read_csv("raw-data/wb_popgrowth.csv") %>% 
-  clean_names() %>% 
-  select("pop_name"=country_name, country_code, "pop_growth1990" = x1990_yr1990) %>% 
-  mutate(pop_growth1990 = as.numeric(pop_growth1990))
-
-cohort %<>%
-  left_join(wb_popgrowth, by=c("alpha_3" = "country_code"))
 
 # calculate other aggregate stats
 # calculate sample size and sample weighted mean
