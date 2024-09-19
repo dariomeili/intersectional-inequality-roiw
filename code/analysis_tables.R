@@ -97,7 +97,7 @@ modelsummary(list(
                      "Counterfactual"=4:5,
                      "Differential"=6:7)) %>%
   theme_tt("tabular") %>% 
-  save_tt(output = "latex/tables/reg_inequalityratio.tex")
+  save_tt("latex/tables/reg_inequalityratio.tex", overwrite = TRUE)
 
 
 ################################################
@@ -122,7 +122,7 @@ modelsummary(list("(A)"=m_theil[[1]],
              escape = FALSE) %>% 
   group_tt(j = list("Group Theil Index" = 2:4)) %>% 
   theme_tt("tabular") %>% 
-  save_tt(output = "latex/tables/reg_theil.tex")
+  save_tt(output = "latex/tables/reg_theil.tex", overwrite = TRUE)
 
 ####################################
 # Table of Aggregated Data (Results)
