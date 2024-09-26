@@ -4,6 +4,11 @@ p_load(kableExtra, gtsummary, modelsummary, tinytable)
 options("modelsummary_format_numeric_latex" = "plain") # To disable `siunitx` and prevent `modelsummary` from wrapping numeric entries in `\num{}`
 options("modelsummary_stars_note" = FALSE)
 
+glance_custom.fixest <- function(x, ...) {
+  dv <- insight::get_response(x)
+  dv <- sprintf("%.4f", mean(dv, na.rm = TRUE))
+data.table::data.table(`Mean of DV` = dv)}
+
 stars = c("*"=0.1, "**" = 0.05, "***"= 0.01)
 
 gm <- tribble(
