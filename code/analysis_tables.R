@@ -1,23 +1,15 @@
 p_load(kableExtra, gtsummary, modelsummary, tinytable)
 
 ## Modelsummary presets
-options("modelsummary_format_numeric_latex" = "plain", 
-        modelsummary_factory_latex = 'kableExtra')
-
-
-glance_custom.fixest <- function(x, ...) {
-  dv <- insight::get_response(x)
-  dv <- sprintf("%.4f", mean(dv, na.rm = TRUE))
-  data.table::data.table(`Mean of DV` = dv)
-}
-
+options("modelsummary_format_numeric_latex" = "plain") # To disable `siunitx` and prevent `modelsummary` from wrapping numeric entries in `\num{}`
+options("modelsummary_stars_note" = FALSE)
 
 stars = c("*"=0.1, "**" = 0.05, "***"= 0.01)
 
 gm <- tribble(
   ~raw, ~clean, ~fmt, 
-  "nobs", "Num.Obs", 0,
   "adj.r.squared", "Adj. R2", 3,
+  "nobs", "Num.Obs", 0,
   "dv", "Mean of DV",  4)
 
 ##################
@@ -53,9 +45,8 @@ cohort %>%
 ####################################################
 # Regression table of inequality ratio on correlates
 ####################################################
-options("modelsummary_format_numeric_latex" = "plain") # To disable `siunitx` and prevent `modelsummary` from wrapping numeric entries in `\num{}`
 
-# Generate the table and use kableExtra
+# Generate the table 
 modelsummary(list(
   "Panel A: Education Variables" = list(
     "(A)"=m_educ[[1]], 
@@ -87,8 +78,9 @@ modelsummary(list(
                "cohort_cat1970-1979" = "Cohort 1970-1979$^c$",
                "cohort_cat1980-" = "Cohort 1980-$^c$", 
                "(Intercept)" = "(Intercept)"),
-  estimate = "{estimate}{stars}",
   gof_map = gm,
+  estimate="{estimate}{stars}",
+  stars = stars, 
   shape = "rcollapse",
   fmt = 5, 
   escape = FALSE) %>%
@@ -98,7 +90,6 @@ modelsummary(list(
                      "Differential"=6:7)) %>%
   theme_tt("tabular") %>% 
   save_tt("latex/tables/reg_inequalityratio.tex", overwrite = TRUE)
-
 
 ################################################
 # Regression table of  Theil index on correlates
@@ -116,7 +107,8 @@ modelsummary(list("(A)"=m_theil[[1]],
                                "cohort_cat1970-1979" = "Cohort 1970-1979$^c$",
                                "cohort_cat1980-" = "Cohort 1980-$^c$", 
                                "(Intercept)" = "(Intercept)"),
-             stars = stars, 
+             estimate = "{estimate}{stars}",
+             stars = stars,
              gof_map = gm,
              fmt = 5,
              escape = FALSE) %>% 
