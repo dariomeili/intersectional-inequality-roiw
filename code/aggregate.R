@@ -1,75 +1,90 @@
+# Set Global Options ----
 options(dplyr.summarise.inform = FALSE)
 options(tidyverse.quiet = TRUE)
 
-library(pacman)
-p_load(tidyverse, magrittr, sjmisc, DescTools, janitor)
-
-# load data
+# Load Data ----
 load("processed-data/merged.Rda")
 
-# source functions
-files.sources = list.files(path = "code/functions", full.names = T)
+# Source Functions ----
+files.sources <- list.files(path = "code/functions", full.names = TRUE)
 sapply(files.sources, source, .GlobalEnv)
 
-# define cohorts, filter age and education
+# Data Preprocessing ----
+
+# Define cohorts, filter by age and education
 df %<>% 
-  mutate(age = as.numeric(as.character(haven::as_factor(age)))) %>% 
-  filter(!is.na(education), 
-         age >=25, 
-         cohort>1920) %>% 
-  mutate(cohort_cat = case_when(
+  mutate(age = as.numeric(as.character(haven::as_factor(age)))) %>%
+  filter(!is.na(education), age >= 25, cohort > 1920) %>%
+  mutate(
+    cohort_cat = case_when(
       cohort <= 1969 ~ "-1969",
       cohort >= 1970 & cohort < 1980 ~ "1970-1979",
-      cohort >= 1980 ~ "1980-"),
+      cohort >= 1980 ~ "1980-"
+    ),
     cohort_cat = fct_relevel(cohort_cat, "-1969", "1970-1979", "1980-"),
-    education = case_when(education >17 ~ 17, 
-                          TRUE ~ as.numeric(education))
-    ) 
-  
-# produce intersections
+    education = case_when(education > 17 ~ 17, TRUE ~ as.numeric(education))
+  )
+
+# Produce intersections by gender and religion/ethnicity
 df %<>%
-  mutate(religion = as_factor(religion),
-         gen.rel = fct_cross(gender, religion), 
-         gen.eth = fct_cross(gender, ethnicity))
-# only include countries with gen.eth intersections
-df %<>%
+  mutate(
+    religion = as_factor(religion),
+    gen.rel = fct_cross(gender, religion),
+    gen.eth = fct_cross(gender, ethnicity)
+  ) %>%
   filter(!is.na(gen.eth))
-# harmonize residence spelling
+
+# Harmonize residence spelling
 df %<>% 
-  mutate(residence = fct_collapse(residence,
-                                  "urban" = c("urban", "Urban"), 
-                                  "rural" = c("rural", "Rural")))
+  mutate(residence = fct_collapse(residence, "urban" = c("urban", "Urban"), "rural" = c("rural", "Rural")))
 
+# Nest Dataframes (Pooled & Cohort) ----
 
-# nest dataframes pooled/cohort ----
-df_pool <- df %>% 
+# Pooled data nested by country
+df_pool <- df %>%
   group_nest(country_long, alpha_3)
 
+# Cohort data nested by country and cohort category
 df_cohort <- df %>%
   group_nest(country_long, alpha_3, cohort_cat)
 
+# Pooled Data Processing ----
 
-# Pooled Data ----
-# calculate gender weighted means 
-temp <- df %>% 
-  count(country_long, gender) %>% 
-  group_by(country_long) %>% 
-  mutate("pct_female" = n/sum(n)) %>% 
-  filter(gender=="female") %>% 
+# Calculate gender-weighted means for pooled data
+temp <- df %>%
+  count(country_long, gender) %>%
+  group_by(country_long) %>%
+  mutate(pct_female = n / sum(n)) %>%
+  filter(gender == "female") %>%
   select(-gender, -n)
 
-temp_pool <- df %>% 
-  full_join(temp, by=c("country_long")) %>% 
-  mutate(gw = case_when(gender == "female" ~ 0.5/pct_female, 
-                        gender == "male" ~ 0.5/(1-pct_female)), 
-         weduc = education*gw) %>% 
-  group_by(country_long) %>% 
-  summarise(gw_educ = sum(weduc)/sum(gw))
+temp_pool <- df %>%
+  full_join(temp, by = c("country_long")) %>%
+  mutate(
+    gw = case_when(
+      gender == "female" ~ 0.5 / pct_female,
+      gender == "male" ~ 0.5 / (1 - pct_female)
+    ),
+    weduc = education * gw
+  ) %>%
+  group_by(country_long) %>%
+  summarise(gw_educ = sum(weduc) / sum(gw))
 
-df_pool %<>% 
-  full_join(temp_pool, by=c("country_long"))
+df_pool %<>%
+  full_join(temp_pool, by = c("country_long"))
 
-# country means, group means, theil, inequality ratio
+# Calculate statistics for pooled data
+df_pool %<>%
+  mutate(
+    educ_w = map_dbl(data, ~weighted.mean(.x[["education"]], .x[["wgt"]])),
+    gen_means = map(data, ~group_mean(.x, education, gender, wgt)),
+    theil_gen = map_dbl(data, ~group_theil(.x, education, gender, wgt)),
+    eth_means = map(data, ~group_mean(.x, education, ethnicity, wgt)),
+    gen.eth_means = map(data, ~group_mean(.x, education, gen.eth, wgt)),
+    educ_gini = map_dbl(data, ~Gini(.x[["education"]], na.rm = TRUE))
+  )
+
+# Aggregate statistics for pooled data
 df_pool %<>% 
   mutate(educ_w = map_dbl(data, ~weighted.mean(.x[["education"]], .x[["wgt"]])),
          # gender:
@@ -89,7 +104,7 @@ df_pool %<>%
          r_gen.eth = map_dbl(gen.eth_means, ~ineq_ratio(.x)), 
          # education gini: 
          educ_gini = map_dbl(data, ~Gini(.x[["education"]], na.rm = TRUE))
-         )
+  )
 
 # add aggregate statistics to pooled data
 df_pool %<>% 
@@ -109,8 +124,8 @@ df_pool %<>%
     l_gen.eth_mean = map_dbl(gen.eth_means, ~mean_extractor(.x, group = "low")),
     h_gen.eth_name = map_chr(gen.eth_means, ~name_extractor(.x, group = "high")),
     h_gen.eth_mean = map_dbl(gen.eth_means, ~mean_extractor(.x, group = "high"))
-    )
-  
+  )
+
 # relative size of lowest and highest intersectional group
 df_pool %<>% 
   mutate(l_share = map2_dbl(n_gen.eth, gen.eth_means, ~share_extractor(.x, .y, type="low")),
@@ -125,7 +140,7 @@ df_pool %<>%
     h_eth_n = map2_dbl(n_eth, eth_means, ~groupn_extractor(.x, .y, type = "high")),
     l_gen.eth_n = map2_dbl(n_gen.eth, gen.eth_means, ~groupn_extractor(.x, .y, type = "low")),
     h_gen.eth_n = map2_dbl(n_gen.eth, gen.eth_means, ~groupn_extractor(.x, .y, type = "high"))
-    )
+  )
 
 # share of rural population in lowest and highest group
 df_pool %<>% 
@@ -148,27 +163,32 @@ df_pool %<>%
 pool <- df_pool %>% 
   select(-data)
 
-# COHORT DATA ----
-# calculate gender weighted means 
-temp <- df %>% 
-  count(country_long, cohort_cat, gender) %>% 
-  group_by(country_long, cohort_cat) %>% 
-  mutate("pct_female" = n/sum(n)) %>% 
-  filter(gender=="female") %>% 
+# Cohort Data Processing ----
+
+# Calculate gender-weighted means for cohort data
+temp <- df %>%
+  count(country_long, cohort_cat, gender) %>%
+  group_by(country_long, cohort_cat) %>%
+  mutate(pct_female = n / sum(n)) %>%
+  filter(gender == "female") %>%
   select(-gender, -n)
 
-temp_cohort <- df %>% 
-  full_join(temp, by=c("country_long", "cohort_cat")) %>% 
-  mutate(gw = case_when(gender == "female" ~ 0.5/pct_female, 
-                        gender == "male" ~ 0.5/(1-pct_female)), 
-         weduc = education*gw) %>% 
-  group_by(country_long, cohort_cat) %>% 
-  summarise(gw_educ = sum(weduc)/sum(gw))
+temp_cohort <- df %>%
+  full_join(temp, by = c("country_long", "cohort_cat")) %>%
+  mutate(
+    gw = case_when(
+      gender == "female" ~ 0.5 / pct_female,
+      gender == "male" ~ 0.5 / (1 - pct_female)
+    ),
+    weduc = education * gw
+  ) %>%
+  group_by(country_long, cohort_cat) %>%
+  summarise(gw_educ = sum(weduc) / sum(gw))
 
-df_cohort %<>% 
-  full_join(temp_cohort, by=c("country_long", "cohort_cat"))
+df_cohort %<>%
+  full_join(temp_cohort, by = c("country_long", "cohort_cat"))
 
-# country means, group means, theil, inequality ratio
+# Calculate statistics for cohort data
 df_cohort %<>% 
   mutate(educ_w = map_dbl(data, ~weighted.mean(.x[["education"]], .x[["wgt"]])),
          # gender:
@@ -189,11 +209,9 @@ df_cohort %<>%
          # education gini: 
          educ_gini = map_dbl(data, ~Gini(.x[["education"]], na.rm = TRUE))
   )
-
-# add aggregate statistics to cohorted and cohort data
-df_cohort %<>% 
-  mutate(
-    #gender:
+# Aggregate statistics for cohort data
+df_cohort %<>%
+  mutate(#gender:
     l_gen_name = map_chr(gen_means, ~name_extractor(.x, group = "low")),
     l_gen_mean = map_dbl(gen_means, ~mean_extractor(.x, group = "low")),
     h_gen_name = map_chr(gen_means, ~name_extractor(.x, group = "high")),
@@ -211,6 +229,7 @@ df_cohort %<>%
   )
 
 
+# Additional Variables for Cohort Data ----
 # relative size of lowest and highest intersectional group
 df_cohort %<>% 
   mutate(l_share = map2_dbl(n_gen.eth, gen.eth_means, ~share_extractor(.x, .y, type="low")),
@@ -247,33 +266,27 @@ df_cohort %<>%
 # write do smaller dataset
 cohort <- df_cohort %>% 
   select(-data)
+# Add GDP data
+gdp <- read_csv("raw-data/gdp-per-capita-worldbank.csv") %>%
+  select(-Entity, "gdp_pc" = `GDP per capita, PPP (constant 2011 international $)`)
 
-# Additional vars (Cohort data only) ----
-# add non-dhs country data for regressions
-gdp <- read_csv("raw-data/gdp-per-capita-worldbank.csv") %>% 
-  select(-Entity, "gdp_pc"=`GDP per capita, PPP (constant 2011 international $)`)
-
-#pre-process data sets
-## only use last available year
-gdp_pc <- gdp %>% 
-  arrange(Code, Year) %>% 
-  group_by(Code) %>% 
+gdp_pc <- gdp %>%
+  arrange(Code, Year) %>%
+  group_by(Code) %>%
   slice(n())
 
 cohort %<>% 
-  left_join(gdp_pc, by=c("alpha_3" = "Code"))
+  left_join(gdp_pc, by = c("alpha_3" = "Code"))
 
-# sigi index
-sigi <- read_csv("raw-data/sigi.csv")
-
-sigi %<>% 
-  select("sigi_code" = LOCATION, "sigi_region" = Region, "sigi_var" = VAR, "SIGI"=Value) %>% 
-  filter(sigi_var == "SIGI_2") %>% 
-  select(-sigi_var) %>% 
-  distinct(sigi_code, SIGI, .keep_all = T)
+# Add SIGI index data
+sigi <- read_csv("raw-data/sigi.csv") %>%
+  select("sigi_code" = LOCATION, "sigi_region" = Region, "sigi_var" = VAR, "SIGI" = Value) %>%
+  filter(sigi_var == "SIGI_2") %>%
+  select(-sigi_var) %>%
+  distinct(sigi_code, SIGI, .keep_all = TRUE)
 
 cohort %<>%
-  left_join(sigi, by=c("alpha_3" = "sigi_code"))
+  left_join(sigi, by = c("alpha_3" = "sigi_code"))
 
 # calculate other aggregate stats
 # calculate sample size and sample weighted mean
@@ -309,18 +322,15 @@ agg_stats %<>%
 cohort %<>% 
   left_join(agg_stats %>% 
               select(country_long, cohort_cat, sample_size, pct_female, n_ethnicity, sd_educ),
-    by=c("country_long", "cohort_cat"))
+            by=c("country_long", "cohort_cat"))
 
-#######################
-# SAVE DATA
-#######################
+# Save Data ----
 
 save(df_cohort, file = "processed-data/df_cohort.Rda")
 save(df_pool, file = "processed-data/df_pool.Rda")
 save(pool, file = "processed-data/pool.Rda")
 save(cohort, file = "processed-data/cohort.Rda")
 
-# save unnested dataframe   
+# Save unnested dataframe
 dhs_main <- df
 save(dhs_main, file = "processed-data/dhs_main.Rda")
-
