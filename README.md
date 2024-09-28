@@ -1,9 +1,3 @@
----
-editor_options: 
-  markdown: 
-    wrap: sentence
----
-
 # Replication Package for Intersecting Inequality Analysis Using DHS and Other Data
 
 ## Project Overview
@@ -23,7 +17,7 @@ This README outlines the steps required to replicate the analysis and provides d
 The project uses a variety of R packages, which are automatically managed by `renv`.
 To restore the environment, simply run the following in R:
 
-\`\`\`r renv::restore()
+`renv::restore()`
 
 ## Replication Steps
 
@@ -118,7 +112,7 @@ The following list contains the required `.DTA` files, which should be placed in
 #### List of Required DHS Files:
 
 | Country                               | DHS Files                                                                                                                                                                                              |
-|--------------------------------|---------------------------------------|
+|---------------------------------|---------------------------------------|
 | Afghanistan                           | AFIR70FL, AFMR70FL                                                                                                                                                                                     |
 | Albania                               | ALIR50FL, ALIR71FL, ALMR50FL, ALMR71FL                                                                                                                                                                 |
 | Burkina Faso                          | BFIR21FL, BFIR31FL, BFIR43FL, BFIR62FL, BFMR21FL, BFMR31FL, BFMR41FL, BFMR62FL                                                                                                                         |
