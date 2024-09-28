@@ -27,12 +27,13 @@ Download the data: Some datasets are included in this repository, while others (
 
 DHS Data:
 
-Download the necessary DHS files for specific countries listed below from the [DHS program website.](https://dhsprogram.com/data/)
-Place the downloaded .DTA files into the "raw-data/dhs/" folder.
+Download the necessary DHS files for specific countries listed below from the [DHS program website.](https://dhsprogram.com/data/) with the ".DTA" file extension
+
+-   usa_00001.csv: US Census data from [IPUMS](https://usa.ipums.org/) (2019 APS Data with the ".csv" file extension
+
+Place the downloaded .DTA/csv. files into the "raw-data/dhs/" folder.
 Other Datasets (already included in raw-data/):
-
--   usa_00001.csv: US Census data from IPUMS.
-
+ 
 -   sigi.csv: Data from the SIGI (Social Institutions and Gender Index) homepage (OECD).
 
 -   gdp-per-capita-worldbank.csv: World Bank GDP per capita data.
