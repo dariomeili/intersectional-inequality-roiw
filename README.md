@@ -52,7 +52,9 @@ A full list of the necessary DHS Data files can found below.
 
 ### Step 3
 
-After setting up the data, you can run the entire analysis pipeline by executing the `main.R` script.
+After setting up the data, open the R Project by opening ìntersectional-inequality.Rproj`. This ensures that the file paths work properly. 
+
+You can now run the entire analysis pipeline by executing the `main.R` script.
 This will load the necessary data, run simulations, and perform the final analysis.
 
 `source("main.R")`
